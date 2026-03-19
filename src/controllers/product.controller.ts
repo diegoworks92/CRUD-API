@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { productsDB } from '../database/db.js';
-
 import type { Product, CreateProductDTO } from '../models/product.model.js';
+import { isValidUuid } from '../utils/validators.js';
 
 export const getProducts = async (
     request: FastifyRequest,
@@ -51,4 +51,107 @@ export const createProduct = async (
     productsDB.push(newProduct);
 
     return reply.code(201).send(newProduct);
+};
+
+export const getProductById = async (
+    request: FastifyRequest,
+    reply: FastifyReply
+) => {
+    const { productId } = request.params as { productId: string };
+
+    if (!isValidUuid(productId)) {
+        return reply.code(400).send({
+            message: `Invalid productId format: ${productId}. Must be a valid UUID.`,
+        });
+    }
+
+    const product = productsDB.find((p) => p.id === productId);
+
+    if (!product) {
+        return reply.code(404).send({
+            message: `Product with ID ${productId} not found.`,
+        });
+    }
+
+    return reply.code(200).send(product);
+};
+
+export const updateProduct = async (
+    request: FastifyRequest,
+    reply: FastifyReply
+) => {
+    const { productId } = request.params as { productId: string };
+    const body = request.body as CreateProductDTO;
+
+    if (!isValidUuid(productId)) {
+        return reply
+            .code(400)
+            .send({ message: `Invalid UUID format: ${productId}` });
+    }
+
+    const productIndex = productsDB.findIndex((p) => p.id === productId);
+
+    if (productIndex === -1) {
+        return reply
+            .code(404)
+            .send({ message: `Product with ID ${productId} not found` });
+    }
+
+    const { name, description, price, category, inStock } = body;
+
+    if (
+        !name ||
+        !description ||
+        price === undefined ||
+        !category ||
+        inStock === undefined
+    ) {
+        return reply
+            .code(400)
+            .send({ message: 'Missing required field for update' });
+    }
+
+    if (typeof price !== 'number' || price <= 0) {
+        return reply
+            .code(400)
+            .send({ message: 'Price must be a positive number' });
+    }
+
+    const updatedProduct: Product = {
+        id: productId,
+        name,
+        description,
+        price,
+        category,
+        inStock,
+    };
+
+    productsDB[productIndex] = updatedProduct;
+
+    return reply.code(200).send(updatedProduct);
+};
+
+export const deleteProduct = async (
+    request: FastifyRequest,
+    reply: FastifyReply
+) => {
+    const { productId } = request.params as { productId: string };
+
+    if (!isValidUuid(productId)) {
+        return reply
+            .code(400)
+            .send({ message: `Invalid UUID format: ${productId}` });
+    }
+
+    const productIndex = productsDB.findIndex((p) => p.id === productId);
+
+    if (productIndex === -1) {
+        return reply
+            .code(404)
+            .send({ message: `Product with ID ${productId} not found` });
+    }
+
+    productsDB.splice(productIndex, 1);
+
+    return reply.code(204).send();
 };
