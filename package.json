@@ -1,0 +1,43 @@
+{
+    "name": "crud-api",
+    "version": "1.0.0",
+    "description": "Simple CRUD API with Fastify",
+    "main": "dist/index.js",
+    "scripts": {
+        "start:dev": "tsx src/index.ts",
+        "start:multi": "tsx src/multi.ts",
+        "build": "tsc",
+        "start:prod": "npm run build && cross-env NODE_ENV=production node dist/index.js",
+        "test": "node --import tsx --test src/__tests__/*.test.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/diegoworks92/CRUD-API.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "bugs": {
+        "url": "https://github.com/diegoworks92/CRUD-API/issues"
+    },
+    "homepage": "https://github.com/diegoworks92/CRUD-API#readme",
+    "dependencies": {
+        "dotenv": "^17.3.1",
+        "fastify": "^5.8.2",
+        "uuid": "^13.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^25.5.0",
+        "@types/uuid": "^10.0.0",
+        "@typescript-eslint/eslint-plugin": "^8.57.1",
+        "@typescript-eslint/parser": "^8.57.1",
+        "cross-env": "^10.1.0",
+        "eslint": "^10.0.3",
+        "eslint-config-prettier": "^10.1.8",
+        "nodemon": "^3.1.14",
+        "prettier": "^3.8.1",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3"
+    }
+}
