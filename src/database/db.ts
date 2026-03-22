@@ -1,8 +1,6 @@
 import type { Product } from '../models/product.model.js';
 import cluster from 'node:cluster';
 
-/* export const productsDB: Product[] = []; */
-
 let masterProducts: Product[] = [];
 
 export const getProductsDB = async (): Promise<Product[]> => {
